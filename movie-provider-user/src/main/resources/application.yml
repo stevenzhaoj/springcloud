@@ -14,7 +14,15 @@ spring:
     username: root
     password: waferxa
     platform: org.hibernate.dialect.MySQL5InnoDBDialect
+  application:
+    name: movie-provider-user
 # 日志
 logging:
   level: debug
-
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    # 将自己的IP注册到Eureka中
+    prefer-ip-address: true

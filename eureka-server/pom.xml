@@ -26,6 +26,7 @@
     </properties>
 
     <dependencies>
+        <!-- spring cloud start -->
         <!-- Eureka Server -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -35,17 +36,22 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-eureka-server</artifactId>
         </dependency>
+        <!-- config -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-config</artifactId>
         </dependency>
+        <!-- spring cloud end -->
 
-        <!-- Spring Boot -->
+        <!-- Spring Boot start -->
+        <!-- test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- Spring Boot end -->
+
     </dependencies>
 
     <dependencyManagement>
