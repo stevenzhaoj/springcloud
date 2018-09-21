@@ -1,6 +1,6 @@
 # 服务
 server:
-  port: 8080
+  port: 8000
 # 数据源
 spring:
   jpa:
