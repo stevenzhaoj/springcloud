@@ -1,0 +1,20 @@
+# 服务
+server:
+  port: 8080
+# 数据源
+spring:
+  jpa:
+    generate-ddl: false
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://192.168.52.128:3306/springcloud?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: waferxa
+    platform: org.hibernate.dialect.MySQL5InnoDBDialect
+# 日志
+logging:
+  level: debug
+
