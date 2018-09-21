@@ -22,7 +22,7 @@ logging:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://peer1:8761/eureka/,http://peer2:8762/eureka/
   instance:
     # 将自己的IP注册到Eureka中
     prefer-ip-address: true
