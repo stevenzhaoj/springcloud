@@ -1,7 +1,7 @@
-# 服务
+# server
 server:
   port: 8000
-# 数据源
+# datasource
 spring:
   jpa:
     generate-ddl: false
@@ -16,13 +16,18 @@ spring:
     platform: org.hibernate.dialect.MySQL5InnoDBDialect
   application:
     name: movie-provider-user
-# 日志
+# log
 logging:
   level: debug
+# eureka
 eureka:
   client:
     service-url:
-      defaultZone: http://peer1:8761/eureka/,http://peer2:8762/eureka/
+#      defaultZone: http://peer1:8761/eureka/,http://peer2:8762/eureka/
+      defaultZone: http://user:user@peer1:8761/eureka/
   instance:
-    # 将自己的IP注册到Eureka中
+    # register own IP in eureka
     prefer-ip-address: true
+    # meta data
+    metadata-map:
+      my-metadata: my-metadata

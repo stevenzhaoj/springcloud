@@ -6,7 +6,8 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://peer1:8761/eureka/,http://peer2:8762/eureka/
+#      defaultZone: http://peer1:8761/eureka/,http://peer2:8762/eureka/
+      defaultZone: http://user:user@peer1:8761/eureka/
   instance:
-    # 将自己的IP注册到Eureka中
+    # register own IP in eureka
     prefer-ip-address: true
