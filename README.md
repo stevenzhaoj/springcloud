@@ -70,6 +70,247 @@
 
 #### 1、基于Eureka实现微服务的注册与发现
 
+- 创建eureka-server项目
+```
+<dependencies>
+        <!-- spring cloud start -->
+        <!-- Eureka Server -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-eureka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-eureka-server</artifactId>
+        </dependency>
+        <!-- config -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+        </dependency>
+        <!-- spring cloud end -->
+
+        <!-- Spring Boot start -->
+        <!-- security -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <!-- test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- Spring Boot end -->
+
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>Dalston.SR5</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+```
+```
+@EnableEurekaServer
+@SpringBootApplication
+public class EurekaServerApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(EurekaServerApplication.class, args);
+    }
+}
+```
+```
+server:
+  port: 8761
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    # 是否注册到Eureka服务中
+    register-with-eureka: false
+    # 是否同步其他Eureka节点的信息
+    fetch-registry: false
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+```
+- 将微服务注册在Eureka中
+- 创建项目movie-consumer-user
+```
+server:
+  port: 8010
+spring:
+  application:
+    name: movie-consumer-user
+eureka:
+  client:
+    service-url:
+      defaultZone: http://@peer1:8761/eureka/
+  instance:
+    prefer-ip-address: true
+```
+```
+<dependencies>
+        <!-- spring boot start-->
+        <!-- starter -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <!-- test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- actuator -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!-- spring boot end-->
+
+        <!-- spring cloud start -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-eureka</artifactId>
+        </dependency>
+        <!-- spring cloud end -->
+        <!-- lombok start -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.20</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- lombok start -->
+
+    </dependencies>
+```
+```
+@EnableEurekaClient
+@SpringBootApplication
+public class MovieConsumerUserApplication {
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(MovieConsumerUserApplication.class, args);
+    }
+}
+```
+- Eureka服务的高可用
+- 创建eureka-server-ha项目
+```
+spring:
+  application:
+    name: eureka-server-ha
+---
+spring:
+  profiles: peer1
+server:
+  port: 8761
+eureka:
+  instance:
+    hostname: peer1
+  client:
+    service-url:
+      defaultZone: http://peer2:8762/eureka/
+---
+spring:
+  profiles: peer2
+server:
+  port: 8762
+eureka:
+  instance:
+    hostname: peer2
+  client:
+    service-url:
+      defaultZone: http://peer1:8761/eureka/
+
+```
+```
+@EnableEurekaClient
+@EnableEurekaServer
+@SpringBootApplication
+public class EurekaServerHaApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(EurekaServerHaApplication.class, args);
+    }
+}
+```
+- 微服务注册在Eureka集群
+- 修改微服务movie-consumer-user
+```
+eureka:
+  client:
+    service-url:
+      defaultZone: http://peer1:8761/eureka/,http://peer2:8762/eureka/
+```
+- Eureka添加用户认证
+- 修改eureka-server
+```
+<!-- security -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+```
+```
+security:
+  basic:
+    enabled: true
+  user:
+    name: user
+    password: user
+```
+- 微服务添加元数据
+- 修改movie-provider-user
+```
+eureka:
+  client:
+    service-url:
+      defaultZone: http://user:user@peer1:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    metadata-map:
+      my-metadata: my-metadata
+```
+- 微服务访问元数据
+- 修改movie-consumer-user，在controller中添加以下代码
+```
+@Autowired
+private DiscoveryClient discoveryClient;
+
+@GetMapping("/user-instance")
+public List<ServiceInstance> showInfo() {
+    return discoveryClient.getInstances("movie-provider-user");
+}
+```
+- Eureka的自我保护
+> 默认情况下，Eureka在一定时间（默认90秒）内，没有接收到某个微服务实例的心跳，Eureka会将该实例注销。但是当发生故障时，微服务与Eureka之间无法正常通信，此时不应该注销该服务。
+
+> Eureka通过“自我保护模式”来解决这个问题，当Eureka节点在短时间丢失过多客户端时，这个节点会进入自我保护模式，保护服务注册表中的信息，不再删除服务注册表中的微服务实例，当故障恢复时，该节点会自动退出自我保护。
+
+
 #### 2、基于Ribbon实现客户端侧负载均衡
 
 #### 3、基于Fegin实现声明式REST调用
