@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Ribbon配置类
+ * PS：该类不应该在主应用程序上下文的@ComponentScan中
  *
  * @author Steven
  * @date 2018/9/26 026 14:36

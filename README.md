@@ -313,6 +313,67 @@ public List<ServiceInstance> showInfo() {
 
 #### 2、基于Ribbon实现客户端侧负载均衡
 
+> Ribbon是Netflix发布的负载均衡器，有助于控制HTTP和TCP客户端的行为。
+
+- 为movie-consumer-user引入Ribbon，因为Eureka本身包含Ribbon所以无须再次引入
+- 修改项目movie-consumer-user
+
+```
+@Slf4j
+@RestController
+public class UserController {
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Autowired
+    private DiscoveryClient discoveryClient;
+
+    @Autowired
+    private LoadBalancerClient loadBalancerClient;
+
+    @GetMapping("/user/{id}")
+    public User findById(@PathVariable Long id) {
+        ResponseEntity<User> response =
+            restTemplate.getForEntity("http://movie-provider-user/user/" + id, User.class);
+        return response.getBody();
+    }
+
+    @GetMapping("/user-instance")
+    public List<ServiceInstance> showInfo() {
+        return discoveryClient.getInstances("movie-provider-user");
+    }
+
+    @GetMapping("/log-instance")
+    public void logUserInstance() {
+        ServiceInstance serviceInstance = loadBalancerClient.choose("movie-provider-user");
+        log.info("{}:{}:{}", serviceInstance.getServiceId(), serviceInstance.getHost(), serviceInstance.getPort());
+    }
+}
+```
+- 添加配置类
+
+```
+/**
+ * Ribbon配置类
+ * PS：该类不应该在主应用程序上下文的@ComponentScan中
+ *
+ * @author Steven
+ * @date 2018/9/26 026 14:36
+ */
+@Configuration
+public class RibbonConfiguration {
+
+    @Bean
+    public IRule ribbonRule() {
+        // 负载规则为随机
+        return new RandomRule();
+    }
+}
+```
+
+
+
 #### 3、基于Fegin实现声明式REST调用
 
 #### 4、基于Hystrix实现微服务的容错管理

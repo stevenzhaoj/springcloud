@@ -48,5 +48,4 @@ public class UserController {
         ServiceInstance serviceInstance = loadBalancerClient.choose("movie-provider-user");
         log.info("{}:{}:{}", serviceInstance.getServiceId(), serviceInstance.getHost(), serviceInstance.getPort());
     }
-
 }
