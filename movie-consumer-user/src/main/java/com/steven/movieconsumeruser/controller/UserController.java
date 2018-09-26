@@ -34,7 +34,7 @@ public class UserController {
     @GetMapping("/user/{id}")
     public User findById(@PathVariable Long id) {
         ResponseEntity<User> response =
-            restTemplate.getForEntity("http://localhost:8000/user/" + id, User.class);
+            restTemplate.getForEntity("http://movie-provider-user/user/" + id, User.class);
         return response.getBody();
     }
 

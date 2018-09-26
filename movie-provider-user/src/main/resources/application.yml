@@ -1,6 +1,7 @@
 # server
 server:
-  port: 8000
+  port: 0
+#  port: 8000
 # datasource
 spring:
   jpa:
