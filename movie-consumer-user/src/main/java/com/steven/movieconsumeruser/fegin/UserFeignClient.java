@@ -2,8 +2,9 @@ package com.steven.movieconsumeruser.fegin;
 
 import com.steven.movieconsumeruser.entity.User;
 import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * Feign接口
@@ -20,5 +21,6 @@ public interface UserFeignClient {
      * @param id ID
      * @return 用户
      */
-    @GetMapping("/{id}") User findById(@PathVariable("id") Long id);
+    @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
+    User findById(@PathVariable("id") Long id);
 }

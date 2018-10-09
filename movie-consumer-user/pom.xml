@@ -59,7 +59,7 @@
         <!-- Feign -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-fegin</artifactId>
+            <artifactId>spring-cloud-starter-feign</artifactId>
         </dependency>
         <!-- spring cloud end -->
 
